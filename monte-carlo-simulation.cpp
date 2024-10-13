@@ -2,6 +2,8 @@
 //
 
 #include <iostream>
+#include <iomanip>
+
 #include <cstdlib>
 #include <random>
 #include <thread>
@@ -15,6 +17,7 @@ int main()
     // Define the range
     std::uniform_real_distribution<> dis(-1.0, 1.0);
 
+    std::cout << std::fixed << std::setprecision(12);
     const int N = 1000000;
     int numInCircle = 0;
     for (int i = 0; i < N; ++i) {
