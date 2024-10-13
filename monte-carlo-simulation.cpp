@@ -8,27 +8,38 @@
 #include <random>
 #include <thread>
 
-int main()
-{
+
+int numInCircleSimple(int N) {
     // Create a random number generator
     std::random_device rd;  // Seed
     std::mt19937 gen(rd()); // Mersenne Twister engine
 
     // Define the range
-    std::uniform_real_distribution<> dis(-1.0, 1.0);
-
-    std::cout << std::fixed << std::setprecision(12);
-    const int N = 1000000;
+    std::uniform_real_distribution<double> dis(-1.0, 1.0);
+    
     int numInCircle = 0;
     for (int i = 0; i < N; ++i) {
-        float rx = dis(gen);
-        float ry = dis(gen);
+        double rx = dis(gen);
+        double ry = dis(gen);
 
         if (rx * rx + ry * ry <= 1) {
             numInCircle++;
         }
     }
-    double pi = 4.0 * numInCircle / double(N);
+    return numInCircle;
+}
+
+double estimatePi(int numInCircle, int N) {
+    return 4.0 * (double(numInCircle) / double(N)); 
+}
+
+int main()
+{
+    std::cout << std::fixed << std::setprecision(12);
+    // estimate pi in simple form.
+    int N = 1000000;
+    int numInCircle = numInCircleSimple(N);
+    double pi = estimatePi(numInCircle, N);
     std::cout << "PI = " << pi << std::endl;
 }
 
