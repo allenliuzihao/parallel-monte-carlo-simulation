@@ -4,11 +4,11 @@
 #include <iostream>
 #include <iomanip>
 
-#include <cstdlib>
+#include <functional> // For std::bind
 #include <random>
 #include <thread>
 
-void numInCircleSimple(unsigned long long N, int threadId, std::vector<unsigned long long> & numCircles) {
+void numCirclesPerThread(unsigned long long N, unsigned int threadId, std::vector<unsigned long long> & numCircles) {
     // Create a random number generator
     std::random_device rd;  // Seed
     std::mt19937 gen(rd()); // Mersenne Twister engine
@@ -40,28 +40,30 @@ int main()
     std::cout << "processor count: " << processor_count << std::endl;
 
     // estimate pi in simple form.
-    unsigned long long N = 100000000;
-    unsigned long long PerThreadN = N / processor_count;
-    std::vector<long long int> numInCircles(processor_count, 0);
+    unsigned long long OriginalN = 100000000;
+    unsigned long long PerThreadN = OriginalN / processor_count;
+    std::vector<unsigned long long> numInCircles(processor_count, 0);
 
     // preallocate threads.
-    std::vector<std::thread> threads(processor_count);
+    std::vector<std::thread> threads;
 
     // Launch a group of threads
-    for (int i = 0; i < processor_count; ++i) {
+    unsigned long long N = OriginalN;
+    for (unsigned int i = 0; i < processor_count; ++i) {
         unsigned long long currN = std::min(N, PerThreadN);
         //  numInCircleSimple(unsigned long long N, int threadId, std::vector<unsigned long long> & numCircles)
-        threads[i] = std::thread(numInCircleSimple, currN, i, numInCircles);
+        threads.emplace_back(std::thread(numCirclesPerThread, currN, i, std::ref(numInCircles)));
         N -= currN;
     }
 
     // Join the threads with the main thread
     unsigned long long totalNumInCircles = 0;
-    for (int i = 0; i < processor_count; ++i) {
+    for (unsigned int i = 0; i < processor_count; ++i) {
         threads[i].join();
         totalNumInCircles += numInCircles[i];
+        std::cout << "thread: " << i << " num circles: " << numInCircles[i] << std::endl;
     }
 
-    double pi = estimatePi(totalNumInCircles, N);
+    double pi = estimatePi(totalNumInCircles, OriginalN);
     std::cout << "PI = " << pi << std::endl;
 }
