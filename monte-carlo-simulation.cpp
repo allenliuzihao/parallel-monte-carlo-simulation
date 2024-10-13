@@ -8,8 +8,7 @@
 #include <random>
 #include <thread>
 
-
-int numInCircleSimple(int N) {
+void numInCircleSimple(unsigned long long N, int threadId, std::vector<unsigned long long> & numCircles) {
     // Create a random number generator
     std::random_device rd;  // Seed
     std::mt19937 gen(rd()); // Mersenne Twister engine
@@ -17,39 +16,52 @@ int numInCircleSimple(int N) {
     // Define the range
     std::uniform_real_distribution<double> dis(-1.0, 1.0);
     
-    int numInCircle = 0;
+    unsigned long long numInCircle = 0;
     for (int i = 0; i < N; ++i) {
         double rx = dis(gen);
         double ry = dis(gen);
 
-        if (rx * rx + ry * ry <= 1) {
+        if (rx * rx + ry * ry <= 1.0) {
             numInCircle++;
         }
     }
-    return numInCircle;
+    numCircles[threadId] = numInCircle;
 }
 
-double estimatePi(int numInCircle, int N) {
+double estimatePi(unsigned long long numInCircle, unsigned long long N) {
     return 4.0 * (double(numInCircle) / double(N)); 
 }
 
 int main()
 {
     std::cout << std::fixed << std::setprecision(12);
+
+    const auto processor_count = std::thread::hardware_concurrency();
+    std::cout << "processor count: " << processor_count << std::endl;
+
     // estimate pi in simple form.
-    int N = 1000000;
-    int numInCircle = numInCircleSimple(N);
-    double pi = estimatePi(numInCircle, N);
+    unsigned long long N = 100000000;
+    unsigned long long PerThreadN = N / processor_count;
+    std::vector<long long int> numInCircles(processor_count, 0);
+
+    // preallocate threads.
+    std::vector<std::thread> threads(processor_count);
+
+    // Launch a group of threads
+    for (int i = 0; i < processor_count; ++i) {
+        unsigned long long currN = std::min(N, PerThreadN);
+        //  numInCircleSimple(unsigned long long N, int threadId, std::vector<unsigned long long> & numCircles)
+        threads[i] = std::thread(numInCircleSimple, currN, i, numInCircles);
+        N -= currN;
+    }
+
+    // Join the threads with the main thread
+    unsigned long long totalNumInCircles = 0;
+    for (int i = 0; i < processor_count; ++i) {
+        threads[i].join();
+        totalNumInCircles += numInCircles[i];
+    }
+
+    double pi = estimatePi(totalNumInCircles, N);
     std::cout << "PI = " << pi << std::endl;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
