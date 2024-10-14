@@ -1,5 +1,7 @@
 #pragma once
 #include <random>
+#include <algorithm>
+#include <cstdlib>
 
 inline double estimatePi(unsigned long long numInCircle, unsigned long long N) {
     return 4.0 * (double(numInCircle) / double(N));
@@ -56,7 +58,15 @@ inline double estimateXSquaredIntegral(double sum, unsigned long long N) {
     return (sum / double(N));
 }
 
-double estimateXSquared(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
+inline double integrandXSquared(double x) {
+    return x * x;
+}
+
+inline double integrandSinXPow5(double x) {
+    return std::pow(std::sin(x), 5.0);
+}
+
+double estimateIntegral(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
     double unstratified = 0;
 
     constexpr double a = 0, b = 2;
@@ -67,7 +77,8 @@ double estimateXSquared(unsigned long long N, std::default_random_engine& gen, s
     for (int i = 0; i < N; ++i) {
         double rnd = dis(gen);   // 0 ~ 1
         double x = rnd * (b - a) + a;  // a ~ b
-        unstratified += x * x;
+        //unstratified += integrandXSquared(x);
+        unstratified += integrandSinXPow5(x);
     }
     unstratified *= (b - a);
 
