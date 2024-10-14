@@ -54,19 +54,21 @@ Result numberOfCirclesStratified(unsigned long long sqrtN, std::default_random_e
     };
 }
 
-inline double estimateXSquaredIntegral(double sum, unsigned long long N) {
+inline double estimateIntegral(double sum, unsigned long long N) {
     return (sum / double(N));
 }
 
+// integral over 0 to 2 is: 2.6666666...
 inline double integrandXSquared(double x) {
     return x * x;
 }
 
+// integral over 0 to 2 is: 0.903931238481499
 inline double integrandSinXPow5(double x) {
     return std::pow(std::sin(x), 5.0);
 }
 
-double estimateIntegral(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
+double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
     double unstratified = 0;
 
     constexpr double a = 0, b = 2;

@@ -88,7 +88,7 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
         // number of circles.
         //unsigned long long  totalNumInCircles = numberOfCircles(N, gen, dis);
         //auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
-        auto unstratified = estimateIntegral(N, gen, dis1);
+        auto unstratified = estimateIntegralSum(N, gen, dis1);
 
         // save result
         result[threadId] = unstratified;
@@ -157,7 +157,7 @@ void estimatePiContinuously(unsigned int processor_count) {
                 // 
                 //std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
                 //std::cout << "\rEstimate of Pi = " << estimatePi(totalNumInCircles, runs) << " from " << runs << " runs." << std::endl;
-                std::cout << "\rEstimate of X^2 integral over 0 to 2 = " << estimateXSquaredIntegral(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
+                std::cout << "\rEstimate of X^2 integral over 0 to 2 = " << estimateIntegral(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
 
             }
         }
