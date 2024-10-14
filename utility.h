@@ -28,15 +28,16 @@ CirclesResult numberOfCirclesStratified(unsigned long long sqrtN, std::default_r
 
     for (int i = 0; i < sqrtN; ++i) {
         for (int j = 0; j < sqrtN; ++j) {
-            double rnd1 = dis(gen);   // 0 - 1
-            double rnd2 = dis(gen);   // 0 - 1
+            double rnd1 = dis(gen);   // 0 ~ 1
+            double rnd2 = dis(gen);   // 0 ~ 1
 
-            double rx = 2 * rnd1 - 1;
-            double ry = 2 * rnd2 - 1;
+            double rx = 2 * rnd1 - 1;       // -1 ~ 1
+            double ry = 2 * rnd2 - 1;       // -1 ~ 1
             if (rx * rx + ry * ry <= 1.0) {
                 unstratified++;
             }
 
+            // stratified sampling.
             rx = 2 * ((i + rnd1) / sqrtN) - 1;
             ry = 2 * ((j + rnd2) / sqrtN) - 1;
             if (rx * rx + ry * ry <= 1.0) {
