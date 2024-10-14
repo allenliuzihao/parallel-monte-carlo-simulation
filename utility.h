@@ -18,12 +18,12 @@ unsigned long long numberOfCircles(unsigned long long N, std::default_random_eng
     return numInCircle;
 }
 
-struct CirclesResult {
+struct Result {
     unsigned long long unstratified = 0;
     unsigned long long stratified = 0;
 };
 
-CirclesResult numberOfCirclesStratified(unsigned long long sqrtN, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
+Result numberOfCirclesStratified(unsigned long long sqrtN, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
     unsigned long long unstratified = 0, stratified = 0;
 
     for (int i = 0; i < sqrtN; ++i) {
@@ -49,5 +49,27 @@ CirclesResult numberOfCirclesStratified(unsigned long long sqrtN, std::default_r
     // return unstratefied and stratified.
     return {
         unstratified, stratified
+    };
+}
+
+inline double estimateXSquaredIntegral(double sum, unsigned long long N) {
+    return (sum / double(N));
+}
+
+std::pair<double, double> estimateXSquared(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
+    double unstratified = 0, stratified = 0;
+
+    constexpr double a = 0, b = 2;
+
+    for (int i = 0; i < N; ++i) {
+        double rnd = dis(gen);   // 0 ~ 1
+        double x = rnd * (b - a) + a;  // a ~ b
+        unstratified += x * x;
+    }
+    unstratified *= (b - a);
+
+    // return unstratefied and stratified.
+    return {
+        stratified, unstratified
     };
 }

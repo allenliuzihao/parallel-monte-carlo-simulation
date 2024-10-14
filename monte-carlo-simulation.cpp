@@ -87,10 +87,11 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
         
         // number of circles.
         //unsigned long long  totalNumInCircles = numberOfCircles(N, gen, dis);
-        auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
+        //auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
+        auto [stratified, unstratified] = estimateXSquared(N, gen, dis1);
 
         // save result
-        result[threadId] = totalNumInCircles.stratified;
+        result[threadId] = unstratified;
         
         // notify main.
         std::lock_guard<std::mutex> lock2(mtx2);
@@ -123,7 +124,7 @@ void estimatePiContinuously(unsigned int processor_count) {
     }
 
     unsigned int thread = 0;
-    unsigned long long runs = 0, totalNumInCircles = 0;
+    unsigned long long runs = 0, totalSatisfied = 0;
     while (true) {
         localRequestQueues[thread]++;
         runs++;
@@ -145,17 +146,19 @@ void estimatePiContinuously(unsigned int processor_count) {
                 }
                 
                 numberOfResultsReady = 0;
-                unsigned long long currNumInCircles = 0, currTotalNumRuns = 0;
+                unsigned long long currSatisfied = 0, currTotalSatisfied = 0;
                 for (unsigned int threadId = 0; threadId < processor_count; ++threadId) {
-                    currNumInCircles += result[threadId];
-                    currTotalNumRuns += localRequestQueues[threadId];
+                    currSatisfied += result[threadId];
+                    currTotalSatisfied += localRequestQueues[threadId];
                     result[threadId] = 0;
                     localRequestQueues[threadId] = 0;
                 }
-                totalNumInCircles += currNumInCircles;
+                totalSatisfied += currSatisfied;
                 // 
                 //std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
-                std::cout << "\rEstimate of Pi = " << estimatePi(totalNumInCircles, runs) << " from " << runs << " runs." << std::endl;
+                //std::cout << "\rEstimate of Pi = " << estimatePi(totalNumInCircles, runs) << " from " << runs << " runs." << std::endl;
+                std::cout << "\rEstimate of X^2 integral over 0 to 2 = " << estimateXSquaredIntegral(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
+
             }
         }
         // increment 
