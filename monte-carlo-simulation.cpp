@@ -87,12 +87,13 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
         
         // number of circles.
         //unsigned long long  totalNumInCircles = numberOfCircles(N, gen, dis);
-        //auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
-        auto unstratified = estimateIntegralSum(N, gen, dis1);
+        auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
+        //auto unstratified = estimateIntegralSum(N, gen, dis1);
 
         // save result
-        result[threadId] = unstratified;
-        
+        //result[threadId] = unstratified;        
+        result[threadId] = totalNumInCircles.stratified;
+
         // notify main.
         std::lock_guard<std::mutex> lock2(mtx2);
 
@@ -130,7 +131,6 @@ void estimatePiContinuously(unsigned int processor_count) {
         runs++;
         if (localRequestQueues[thread] >= RUN_PER_BATCH) {
             // signal thread to take requests, communicate by one variable.
-            //std::cout << "signal thread " << thread << " take request " << localRequestQueues[thread] << std::endl;
             {
                 std::lock_guard<std::mutex> lock1(*mtx[thread]);
                 requestQueues[thread] = localRequestQueues[thread];
@@ -156,8 +156,8 @@ void estimatePiContinuously(unsigned int processor_count) {
                 totalSatisfied += currSatisfied;
                 // 
                 //std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
-                //std::cout << "\rEstimate of Pi = " << estimatePi(totalNumInCircles, runs) << " from " << runs << " runs." << std::endl;
-                std::cout << "\rEstimate of integral over 0 to 2 = " << estimateIntegral(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
+                std::cout << "\rEstimate of Pi = " << estimatePi(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
+                //std::cout << "\rEstimate of integral over 0 to 2 = " << estimateIntegral(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
 
             }
         }
