@@ -32,15 +32,8 @@ double estimatePi(unsigned long long numInCircle, unsigned long long N) {
     return 4.0 * (double(numInCircle) / double(N)); 
 }
 
-int main()
-{
-    std::cout << std::fixed << std::setprecision(12);
-
-    const auto processor_count = std::thread::hardware_concurrency();
-    std::cout << "processor count: " << processor_count << std::endl;
-
+double estimatePiMultiThreaded(unsigned long long OriginalN, unsigned int processor_count) {
     // estimate pi in simple form.
-    unsigned long long OriginalN = 500000000;
     unsigned long long PerThreadN = OriginalN / processor_count;
     std::vector<unsigned long long> numInCircles(processor_count, 0);
 
@@ -63,9 +56,19 @@ int main()
     for (unsigned int i = 0; i < processor_count; ++i) {
         threads[i].join();
         totalNumInCircles += numInCircles[i];
-        std::cout << "thread: " << i << " num circles: " << numInCircles[i] << std::endl;
+        //std::cout << "thread: " << i << " num circles: " << numInCircles[i] << std::endl;
     }
+    return estimatePi(totalNumInCircles, OriginalN);
+    //std::cout << "PI = " << pi << std::endl;
+}
 
-    double pi = estimatePi(totalNumInCircles, OriginalN);
-    std::cout << "PI = " << pi << std::endl;
+int main()
+{
+    std::cout << std::fixed << std::setprecision(12);
+
+    const auto processor_count = std::thread::hardware_concurrency();
+    unsigned long long OriginalN = 500000000;
+    std::cout << "estimated pi, multi-threaded, N = " << OriginalN << " pi = " << estimatePiMultiThreaded(OriginalN, processor_count) << std::endl;
+
+    
 }
