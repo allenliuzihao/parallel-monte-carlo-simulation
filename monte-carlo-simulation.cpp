@@ -56,10 +56,15 @@ double estimatePiMultiThreaded(unsigned long long OriginalN, unsigned int proces
     for (unsigned int i = 0; i < processor_count; ++i) {
         threads[i].join();
         totalNumInCircles += numInCircles[i];
-        //std::cout << "thread: " << i << " num circles: " << numInCircles[i] << std::endl;
     }
     return estimatePi(totalNumInCircles, OriginalN);
-    //std::cout << "PI = " << pi << std::endl;
+}
+
+void estimatePiContinuously() {
+    unsigned long long runs = 0;
+    while (true) {
+
+    }
 }
 
 int main()
@@ -69,6 +74,6 @@ int main()
     const auto processor_count = std::thread::hardware_concurrency();
     unsigned long long OriginalN = 500000000;
     std::cout << "estimated pi, multi-threaded, N = " << OriginalN << " pi = " << estimatePiMultiThreaded(OriginalN, processor_count) << std::endl;
-
     
+
 }
