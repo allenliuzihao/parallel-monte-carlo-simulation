@@ -15,7 +15,13 @@
 #include "utility.h"
 
 void numCirclesPerThread(unsigned long long N, unsigned int threadId, std::vector<unsigned long long> & numCircles) {
-    numCircles[threadId] = numberOfCircles(N);
+    // Create a random number generator
+    std::random_device rd;  // Seed
+    std::default_random_engine gen(rd()); // Mersenne Twister engine
+
+    // Define the range
+    std::uniform_real_distribution<double> dis(-1.0, 1.0);
+    numCircles[threadId] = numberOfCircles(N, gen, dis);
 }
 
 double estimatePiMultiThreaded(unsigned long long OriginalN, unsigned int processor_count) {
@@ -54,6 +60,13 @@ int numberOfResultsReady = 0;
 constexpr int RUN_PER_BATCH = 100000;
 
 void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned long long> & requestQueues, std::vector<unsigned long long> & result) {
+    // Create a random number generator
+    std::random_device rd;  // Seed
+    std::default_random_engine gen(rd()); // Mersenne Twister engine
+
+    // Define the range
+    std::uniform_real_distribution<double> dis(-1.0, 1.0);
+
     while (true) {
         // wait for signal.
         // locking
@@ -72,7 +85,7 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
         }
         
         // number of circles.
-        unsigned long long  totalNumInCircles = numberOfCircles(N);
+        unsigned long long  totalNumInCircles = numberOfCircles(N, gen, dis);
 
         // save result
         result[threadId] = totalNumInCircles;
@@ -111,13 +124,13 @@ void estimatePiContinuously(unsigned int processor_count) {
     unsigned long long runs = 0, totalNumInCircles = 0;
     while (true) {
         localRequestQueues[thread]++;
+        runs++;
         if (localRequestQueues[thread] >= RUN_PER_BATCH) {
             // signal thread to take requests, communicate by one variable.
             //std::cout << "signal thread " << thread << " take request " << localRequestQueues[thread] << std::endl;
             {
                 std::lock_guard<std::mutex> lock1(*mtx[thread]);
                 requestQueues[thread] = localRequestQueues[thread];
-                localRequestQueues[thread] = 0;
                 cv[thread]->notify_one();
             }
             
@@ -130,16 +143,20 @@ void estimatePiContinuously(unsigned int processor_count) {
                 }
                 
                 numberOfResultsReady = 0;
+                unsigned long long currNumInCircles = 0, currTotalNumRuns = 0;
                 for (unsigned int threadId = 0; threadId < processor_count; ++threadId) {
-                    totalNumInCircles += result[threadId];
+                    currNumInCircles += result[threadId];
+                    currTotalNumRuns += localRequestQueues[threadId];
                     result[threadId] = 0;
+                    localRequestQueues[threadId] = 0;
                 }
+                totalNumInCircles += currNumInCircles;
+                // 
+                std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
                 std::cout << "\rEstimate of Pi = " << estimatePi(totalNumInCircles, runs) << " from " << runs << " runs." << std::endl;
             }
         }
-
         // increment 
-        runs++;
         thread = (thread + 1) % processor_count;
     }
 }
