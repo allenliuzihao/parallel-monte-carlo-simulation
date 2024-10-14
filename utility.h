@@ -72,6 +72,10 @@ inline double integrandSinXPow5(double x) {
     return std::pow(std::sin(x), 5.0);
 }
 
+inline double integrandExponent(double x) {
+    return std::exp(x);
+}
+
 inline double integrandLogSin(double x) {
     return std::log(std::sin(x));
 }
@@ -90,7 +94,8 @@ double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen
         //unstratified += integrandXSquared(x);
         //unstratified += integrandSinXPow5(x);
         //unstratified += integrandLogSin(x);
-        unstratified += integrandXPow(x, 2.5);
+        //unstratified += integrandXPow(x, 2.5);
+        unstratified += integrandExponent(x);
     }
     unstratified *= (b - a);
 
