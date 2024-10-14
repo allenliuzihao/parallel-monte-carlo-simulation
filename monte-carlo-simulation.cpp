@@ -10,13 +10,13 @@
 #include <mutex>
 #include <condition_variable>
 
+#include <algorithm>
 
 #include "utility.h"
 
 void numCirclesPerThread(unsigned long long N, unsigned int threadId, std::vector<unsigned long long> & numCircles) {
     numCircles[threadId] = numberOfCircles(N);
 }
-
 
 double estimatePiMultiThreaded(unsigned long long OriginalN, unsigned int processor_count) {
     // estimate pi in simple form.
@@ -45,7 +45,6 @@ double estimatePiMultiThreaded(unsigned long long OriginalN, unsigned int proces
     }
     return estimatePi(totalNumInCircles, OriginalN);
 }
-
 
 std::vector<std::unique_ptr<std::mutex>> mtx;
 std::vector<std::unique_ptr<std::condition_variable>> cv;
