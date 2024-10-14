@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <iomanip>
-
+#include <cassert>
 #include <functional> // For std::bind
 #include <random>
 #include <thread>
@@ -40,7 +40,7 @@ int main()
     std::cout << "processor count: " << processor_count << std::endl;
 
     // estimate pi in simple form.
-    unsigned long long OriginalN = 100000000;
+    unsigned long long OriginalN = 500000000;
     unsigned long long PerThreadN = OriginalN / processor_count;
     std::vector<unsigned long long> numInCircles(processor_count, 0);
 
@@ -48,13 +48,15 @@ int main()
     std::vector<std::thread> threads;
 
     // Launch a group of threads
-    unsigned long long N = OriginalN;
+    unsigned long long N = OriginalN, numNSent = 0;
     for (unsigned int i = 0; i < processor_count; ++i) {
         unsigned long long currN = std::min(N, PerThreadN);
         //  numInCircleSimple(unsigned long long N, int threadId, std::vector<unsigned long long> & numCircles)
         threads.emplace_back(std::thread(numCirclesPerThread, currN, i, std::ref(numInCircles)));
         N -= currN;
+        numNSent += currN;
     }
+    assert(numNSent == OriginalN);
 
     // Join the threads with the main thread
     unsigned long long totalNumInCircles = 0;
