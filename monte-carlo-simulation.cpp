@@ -88,7 +88,7 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
         // number of circles.
         //unsigned long long  totalNumInCircles = numberOfCircles(N, gen, dis);
         //auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
-        auto [stratified, unstratified] = estimateXSquared(N, gen, dis1);
+        auto unstratified = estimateXSquared(N, gen, dis1);
 
         // save result
         result[threadId] = unstratified;

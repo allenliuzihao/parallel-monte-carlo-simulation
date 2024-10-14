@@ -56,10 +56,13 @@ inline double estimateXSquaredIntegral(double sum, unsigned long long N) {
     return (sum / double(N));
 }
 
-std::pair<double, double> estimateXSquared(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
-    double unstratified = 0, stratified = 0;
+double estimateXSquared(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
+    double unstratified = 0;
 
     constexpr double a = 0, b = 2;
+
+    double deltaX = (b - a) / double(N);
+    double x_stratified = 0;
 
     for (int i = 0; i < N; ++i) {
         double rnd = dis(gen);   // 0 ~ 1
@@ -69,7 +72,5 @@ std::pair<double, double> estimateXSquared(unsigned long long N, std::default_ra
     unstratified *= (b - a);
 
     // return unstratefied and stratified.
-    return {
-        stratified, unstratified
-    };
+    return unstratified;
 }
