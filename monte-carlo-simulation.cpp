@@ -10,6 +10,7 @@
 #include <mutex>
 #include <condition_variable>
 
+
 #include "utility.h"
 
 void numCirclesPerThread(unsigned long long N, unsigned int threadId, std::vector<unsigned long long> & numCircles) {
@@ -57,16 +58,19 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
     while (true) {
         // wait for signal.
         // locking
-        std::unique_lock<std::mutex> lock1(*mtx[threadId]);
+        unsigned long long  N;
+        {
+            std::unique_lock<std::mutex> lock1(*mtx[threadId]);
 
-        // waiting
-        cv[threadId]->wait(lock1, [&, threadId] { 
-            return requestQueues[threadId] >= RUN_PER_BATCH;
-        });
+            // waiting
+            cv[threadId]->wait(lock1, [&, threadId] {
+                return requestQueues[threadId] >= RUN_PER_BATCH;
+            });
 
-        // take request off the queue.
-        unsigned long long  N = requestQueues[threadId];
-        requestQueues[threadId] = 0;
+            // take request off the queue.
+            N = requestQueues[threadId];
+            requestQueues[threadId] = 0;
+        }
         
         // number of circles.
         unsigned long long  totalNumInCircles = numberOfCircles(N);
@@ -117,7 +121,7 @@ void estimatePiContinuously(unsigned int processor_count) {
                 localRequestQueues[thread] = 0;
                 cv[thread]->notify_one();
             }
-             
+            
             if (thread == processor_count - 1) {
                 // wait for all threads to finish.
                 {
