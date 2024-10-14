@@ -63,9 +63,17 @@ inline double integrandXSquared(double x) {
     return x * x;
 }
 
+inline double integrandXPow(double x, double exponent) {
+    return std::pow(x, exponent);
+}
+
 // integral over 0 to 2 is: 0.903931238481499
 inline double integrandSinXPow5(double x) {
     return std::pow(std::sin(x), 5.0);
+}
+
+inline double integrandLogSin(double x) {
+    return std::log(std::sin(x));
 }
 
 double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
@@ -80,7 +88,9 @@ double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen
         double rnd = dis(gen);   // 0 ~ 1
         double x = rnd * (b - a) + a;  // a ~ b
         //unstratified += integrandXSquared(x);
-        unstratified += integrandSinXPow5(x);
+        //unstratified += integrandSinXPow5(x);
+        //unstratified += integrandLogSin(x);
+        unstratified += integrandXPow(x, 2.5);
     }
     unstratified *= (b - a);
 
