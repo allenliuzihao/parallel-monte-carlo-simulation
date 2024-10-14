@@ -57,7 +57,7 @@ std::vector<std::unique_ptr<std::condition_variable>> cv;
 std::mutex mtx2;
 std::condition_variable cv2;
 int numberOfResultsReady = 0;
-constexpr int RUN_PER_BATCH = 100000;
+constexpr int RUN_PER_BATCH = 1000000;
 
 void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned long long> & requestQueues, std::vector<unsigned long long> & result) {
     // Create a random number generator
@@ -66,6 +66,7 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
 
     // Define the range
     std::uniform_real_distribution<double> dis(-1.0, 1.0);
+    std::uniform_real_distribution<double> dis1(0.0, 1.0);
 
     while (true) {
         // wait for signal.
@@ -85,10 +86,11 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
         }
         
         // number of circles.
-        unsigned long long  totalNumInCircles = numberOfCircles(N, gen, dis);
+        //unsigned long long  totalNumInCircles = numberOfCircles(N, gen, dis);
+        auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
 
         // save result
-        result[threadId] = totalNumInCircles;
+        result[threadId] = totalNumInCircles.stratified;
         
         // notify main.
         std::lock_guard<std::mutex> lock2(mtx2);
@@ -152,7 +154,7 @@ void estimatePiContinuously(unsigned int processor_count) {
                 }
                 totalNumInCircles += currNumInCircles;
                 // 
-                std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
+                //std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
                 std::cout << "\rEstimate of Pi = " << estimatePi(totalNumInCircles, runs) << " from " << runs << " runs." << std::endl;
             }
         }
