@@ -103,7 +103,7 @@ double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen
     constexpr double a = 0, b = 2;
     for (int i = 0; i < N; ++i) {
         double rnd = dis(gen);   // 0 ~ 1
-        if (rnd == 0) {
+        if (rnd == 0) { // x = 0, pdf = 0, x ^ 2 = 0, no contribution.
             continue;
         }
         //double x = uniformSample(a, b, rnd);
