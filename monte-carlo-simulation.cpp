@@ -157,8 +157,8 @@ void estimatePiContinuously(unsigned int processor_count) {
                 // 
                 //std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
                 //std::cout << "\rEstimate of Pi = " << estimatePi(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
+                //std::cout << "\rEstimate of integral over 0 to 2 = " << estimateIntegral(currSatisfied, currTotalSatisfied) << " from current " << currTotalSatisfied << " runs." << std::endl;
                 std::cout << "\rEstimate of integral over 0 to 2 = " << estimateIntegral(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
-
             }
         }
         // increment 
@@ -168,7 +168,7 @@ void estimatePiContinuously(unsigned int processor_count) {
 
 int main()
 {
-    std::cout << std::fixed << std::setprecision(12);
+    std::cout << std::fixed << std::setprecision(10);
 
     const auto processor_count = std::thread::hardware_concurrency();
     //unsigned long long OriginalN = 500000000;
