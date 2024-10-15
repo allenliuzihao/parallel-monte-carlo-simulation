@@ -89,21 +89,30 @@ inline double uniformPdf(double a, double b) {
     return 1.0 / (b - a);
 }
 
+/* linear function sampling strategy */
+inline double linearSample(double rnd) {
+    return 2.0 * std::sqrt(rnd);  // a ~ b
+}
+
+inline double linearPdf(double x) {
+    return x / 2.0;
+}
+
 double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
     double unstratified = 0;
-
     constexpr double a = 0, b = 2;
-
-    double deltaX = (b - a) / double(N);
-    double x_stratified = 0;
-
     for (int i = 0; i < N; ++i) {
         double rnd = dis(gen);   // 0 ~ 1
-        double x = uniformSample(a, b, rnd);
-        double pdf = uniformPdf(a, b);
-
-        //unstratified += integrandXSquared(x) / pdf;
-        unstratified += integrandSinXPow5(x) / pdf;
+        if (rnd == 0) {
+            continue;
+        }
+        //double x = uniformSample(a, b, rnd);
+        //double pdf = uniformPdf(a, b);
+        double x = linearSample(rnd);
+        double pdf = linearPdf(x);
+        
+        unstratified += integrandXSquared(x) / pdf;
+        //unstratified += integrandSinXPow5(x) / pdf;
         //unstratified += integrandLogSin(x);
         //unstratified += integrandXPow(x, 2.5);
         //unstratified += integrandExponent(x) / pdf;
