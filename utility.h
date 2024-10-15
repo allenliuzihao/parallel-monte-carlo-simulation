@@ -80,6 +80,15 @@ inline double integrandLogSin(double x) {
     return std::log(std::sin(x));
 }
 
+/* uniform sampling strategy */
+inline double uniformSample(double a, double b, double rnd) {
+    return rnd * (b - a) + a;  // a ~ b
+}
+
+inline double uniformPdf(double a, double b) {
+    return 1.0 / (b - a);
+}
+
 double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
     double unstratified = 0;
 
@@ -90,14 +99,15 @@ double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen
 
     for (int i = 0; i < N; ++i) {
         double rnd = dis(gen);   // 0 ~ 1
-        double x = rnd * (b - a) + a;  // a ~ b
-        //unstratified += integrandXSquared(x);
-        //unstratified += integrandSinXPow5(x);
+        double x = uniformSample(a, b, rnd);
+        double pdf = uniformPdf(a, b);
+
+        //unstratified += integrandXSquared(x) / pdf;
+        unstratified += integrandSinXPow5(x) / pdf;
         //unstratified += integrandLogSin(x);
         //unstratified += integrandXPow(x, 2.5);
-        unstratified += integrandExponent(x);
+        //unstratified += integrandExponent(x) / pdf;
     }
-    unstratified *= (b - a);
 
     // return unstratefied and stratified.
     return unstratified;
