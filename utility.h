@@ -98,6 +98,15 @@ inline double linearPdf(double x) {
     return x / 2.0;
 }
 
+/* quadratic sampling strategy */
+inline double quadraticSample(double rnd) {
+    return 8.0 * std::pow(rnd, 1.0 / 3.0);
+}
+
+inline double quadraticPdf(double x) {
+    return (3.0 / 8.0) * x * x;
+}
+
 double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
     double unstratified = 0;
     constexpr double a = 0, b = 2;
@@ -110,7 +119,9 @@ double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen
         //double pdf = uniformPdf(a, b);
         double x = linearSample(rnd);
         double pdf = linearPdf(x);
-        
+        //double x = quadraticSample(rnd);
+        //double pdf = quadraticPdf(x);
+
         unstratified += integrandXSquared(x) / pdf;
         //unstratified += integrandSinXPow5(x) / pdf;
         //unstratified += integrandLogSin(x);
