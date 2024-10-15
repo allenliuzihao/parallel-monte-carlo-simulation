@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <format>
 #include <iomanip>
 #include <cassert>
 #include <functional> // For std::bind
@@ -87,12 +88,12 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
         
         // number of circles.
         //unsigned long long  totalNumInCircles = numberOfCircles(N, gen, dis);
-        //auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
-        auto unstratified = estimateIntegralSum(N, gen, dis1);
+        auto  totalNumInCircles = numberOfCirclesStratified(std::sqrt(N), gen, dis1);
+        //auto unstratified = estimateIntegralSum(N, gen, dis1);
 
         // save result
-        result[threadId] = unstratified;        
-        //result[threadId] = totalNumInCircles.stratified;
+        //result[threadId] = unstratified;        
+        result[threadId] = totalNumInCircles.stratified;
 
         // notify main.
         std::lock_guard<std::mutex> lock2(mtx2);
@@ -156,9 +157,9 @@ void estimatePiContinuously(unsigned int processor_count) {
                 totalSatisfied += currSatisfied;
                 // 
                 //std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
-                //std::cout << "\rEstimate of Pi = " << estimatePi(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
+                std::cout << "\rEstimate of Pi = " << std::format("{}", estimatePi(totalSatisfied, runs)) << " from " << runs << " runs." << std::endl;
                 //std::cout << "\rEstimate of integral over 0 to 2 = " << estimateIntegral(currSatisfied, currTotalSatisfied) << " from current " << currTotalSatisfied << " runs." << std::endl;
-                std::cout << "\rEstimate of integral over 0 to 2 = " << estimateIntegral(totalSatisfied, runs) << " from " << runs << " runs." << std::endl;
+                //std::cout << "\rEstimate of integral over 0 to 2 = " << std::format("{}", estimateIntegral(totalSatisfied, runs)) << " from " << runs << " runs." << std::endl;
             }
         }
         // increment 
@@ -168,7 +169,7 @@ void estimatePiContinuously(unsigned int processor_count) {
 
 int main()
 {
-    std::cout << std::fixed << std::setprecision(10);
+    //std::cout << std::fixed << std::setprecision(10);
 
     const auto processor_count = std::thread::hardware_concurrency();
     //unsigned long long OriginalN = 500000000;

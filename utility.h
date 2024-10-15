@@ -128,7 +128,7 @@ double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen
         //unstratified += integrandXPow(x, 2.5);
         //unstratified += integrandExponent(x) / pdf;
     }
-    assert(std::abs(unstratified / N  -  8.0 / 3.0) < 1e-8);
+    //assert(std::abs(unstratified / N  -  8.0 / 3.0) < 1e-8);
 
     // return unstratefied and stratified.
     return unstratified;
