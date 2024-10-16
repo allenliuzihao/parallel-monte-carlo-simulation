@@ -142,7 +142,7 @@ void estimatePiContinuously(unsigned int processor_count) {
                 // wait for all threads to finish.
                 {
                     std::unique_lock<std::mutex> lock2(mtx2);
-                    // waiting
+                    // waiting: implements while (!pred()) wait(lock);
                     cv2.wait(lock2, [&] { return numberOfResultsReady == processor_count; });
                 }
                 numberOfResultsReady = 0;
