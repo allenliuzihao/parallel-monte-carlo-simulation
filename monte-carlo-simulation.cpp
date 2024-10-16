@@ -96,12 +96,12 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
         //result[threadId] = totalNumInCircles.stratified;
 
         // notify main.
-        std::lock_guard<std::mutex> lock2(mtx2);
-
-        numberOfResultsReady++;
-
-        // signal main.
-        cv2.notify_one();
+        {
+            std::lock_guard<std::mutex> lock2(mtx2);
+            numberOfResultsReady++;
+            // signal main.
+            cv2.notify_one();
+        }
     }
 }
 
@@ -145,7 +145,6 @@ void estimatePiContinuously(unsigned int processor_count) {
                     // waiting
                     cv2.wait(lock2, [&] { return numberOfResultsReady == processor_count; });
                 }
-                
                 numberOfResultsReady = 0;
                 unsigned long long currSatisfied = 0, currTotalSatisfied = 0;
                 for (unsigned int threadId = 0; threadId < processor_count; ++threadId) {
