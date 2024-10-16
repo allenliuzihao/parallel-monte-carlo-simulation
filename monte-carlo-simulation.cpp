@@ -158,8 +158,8 @@ void estimatePiContinuously(unsigned int processor_count) {
                 // 
                 //std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
                 //std::cout << "\rEstimate of Pi = " << std::format("{}", estimatePi(totalSatisfied, runs)) << " from " << runs << " runs." << std::endl;
-                //std::cout << "\rEstimate of integral over 0 to 2 = " << estimateIntegral(currSatisfied, currTotalSatisfied) << " from current " << currTotalSatisfied << " runs." << std::endl;
-                std::cout << "\rEstimate of integral over 0 to 2 = " << std::format("{}", estimateIntegral(totalSatisfied, runs)) << " from " << runs << " runs." << std::endl;
+                //std::cout << "\rEstimate of integral = " << estimateIntegral(currSatisfied, currTotalSatisfied) << " from current " << currTotalSatisfied << " runs." << std::endl;
+                std::cout << "\rEstimate of integral = " << std::format("{}", estimateIntegral(totalSatisfied, runs)) << " from " << runs << " runs." << std::endl;
             }
         }
         // increment 
