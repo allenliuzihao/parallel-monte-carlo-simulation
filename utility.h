@@ -2,12 +2,13 @@
 #include <random>
 #include <algorithm>
 #include <cstdlib>
+#include <numbers>
 
 inline double estimatePi(unsigned long long numInCircle, unsigned long long N) {
     return 4.0 * (double(numInCircle) / double(N));
 }
 
-unsigned long long numberOfCircles(unsigned long long N, std::default_random_engine&gen, std::uniform_real_distribution<double> &dis) {
+unsigned long long numberOfCircles(unsigned long long N, std::mt19937&gen, std::uniform_real_distribution<double> &dis) {
     unsigned long long numInCircle = 0;
     for (int i = 0; i < N; ++i) {
         double rx = dis(gen);
@@ -25,7 +26,7 @@ struct Result {
     unsigned long long stratified = 0;
 };
 
-Result numberOfCirclesStratified(unsigned long long sqrtN, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
+Result numberOfCirclesStratified(unsigned long long sqrtN, std::mt19937& gen, std::uniform_real_distribution<double>& dis) {
     unsigned long long unstratified = 0, stratified = 0;
 
     for (int i = 0; i < sqrtN; ++i) {
@@ -107,7 +108,50 @@ inline double quadraticPdf(double x) {
     return (3.0 / 8.0) * x * x;
 }
 
-double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen, std::uniform_real_distribution<double>& dis) {
+struct vec3 {
+    double x{}, y{}, z{};
+    
+    double length() {
+        return std::sqrt(x * x + y * y + z * z);
+    }
+
+    vec3 normalize() {
+        double l = length();
+        double inv_l = 1.0 / l;
+        if (l == 0) {
+            return vec3(0, 0, 0);
+        }
+        return {
+            x * inv_l, y * inv_l, z * inv_l
+        };
+    }
+};
+
+inline vec3 sampleDirectionOnUnitSphere(std::mt19937& gen, std::uniform_real_distribution<double>& dis) {
+    while (true) {
+        double rnd1 = 2.0 * dis(gen) - 1.0;   // -1 ~ 1
+        double rnd2 = 2.0 * dis(gen) - 1.0;   // -1 ~ 1
+        double rnd3 = 2.0 * dis(gen) - 1.0;   // -1 ~ 1
+
+        vec3 dir = vec3(rnd1, rnd2, rnd3);
+        double l = dir.length();
+        if (l <= 1.0 && l > 0.0) {
+            return dir.normalize();
+        }
+    }
+    return {};
+}
+
+/* uniform direction on unit sphere */
+inline double cosineSquaredIntegrand(const vec3 &d) {
+    return d.z * d.z;
+}
+
+inline double dirPdf(const vec3 &d) {
+    return 1.0 / (4.0 * std::numbers::pi);
+}
+
+double estimateIntegralSum(unsigned long long N, std::mt19937& gen, std::uniform_real_distribution<double>& dis) {
     double unstratified = 0;
     constexpr double a = 0, b = 2;
     for (int i = 0; i < N; ++i) {
@@ -117,16 +161,19 @@ double estimateIntegralSum(unsigned long long N, std::default_random_engine& gen
         }
         //double x = uniformSample(a, b, rnd);
         //double pdf = uniformPdf(a, b);
-        double x = linearSample(rnd);
-        double pdf = linearPdf(x);
+        //double x = linearSample(rnd);
+        //double pdf = linearPdf(x);
         //double x = quadraticSample(rnd);
         //double pdf = quadraticPdf(x);
+        vec3 dir = sampleDirectionOnUnitSphere(gen, dis);
+        double pdf = dirPdf(dir);
 
-        unstratified += integrandXSquared(x) / pdf;
+        //unstratified += integrandXSquared(x) / pdf;
         //unstratified += integrandSinXPow5(x) / pdf;
         //unstratified += integrandLogSin(x);
         //unstratified += integrandXPow(x, 2.5);
         //unstratified += integrandExponent(x) / pdf;
+        unstratified += cosineSquaredIntegrand(dir) / pdf;
     }
     //assert(std::abs(unstratified / N  -  8.0 / 3.0) < 1e-8);
 

@@ -18,7 +18,7 @@
 void numCirclesPerThread(unsigned long long N, unsigned int threadId, std::vector<unsigned long long> & numCircles) {
     // Create a random number generator
     std::random_device rd;  // Seed
-    std::default_random_engine gen(rd()); // Mersenne Twister engine
+    std::mt19937 gen(rd()); // Mersenne Twister engine
 
     // Define the range
     std::uniform_real_distribution<double> dis(-1.0, 1.0);
@@ -63,7 +63,7 @@ constexpr int RUN_PER_BATCH = 1000000;
 void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned long long> & requestQueues, std::vector<unsigned long long> & result) {
     // Create a random number generator
     std::random_device rd;  // Seed
-    std::default_random_engine gen(rd()); // Mersenne Twister engine
+    std::mt19937 gen(rd()); // Mersenne Twister engine
 
     // Define the range
     std::uniform_real_distribution<double> dis(-1.0, 1.0);
