@@ -195,6 +195,36 @@ void estimatePiContinuously(unsigned int processor_count) {
     }
 }
 
+void estimateSequentially(unsigned int processor_count) {
+    // Create a random number generator
+    std::random_device rd;  // Seed
+    std::mt19937 gen(rd()); // Mersenne Twister engine
+
+    // Define the range
+    std::uniform_real_distribution<double> dis(-1.0, 1.0);
+    std::uniform_real_distribution<double> dis1(0.0, 1.0);
+
+    auto start = std::chrono::high_resolution_clock::now();
+    unsigned long long BATCH_SIZE = RUN_PER_BATCH * processor_count;
+    unsigned long long totalSatisfied = 0, total = 0;
+    while (true) {
+        total += BATCH_SIZE;
+        totalSatisfied += estimateIntegralSum(BATCH_SIZE, gen, dis1);
+
+        // 
+        //std::cout << "\rEstimate of Pi = " << estimatePi(currNumInCircles, currTotalNumRuns) << " from current " << currTotalNumRuns << " runs." << std::endl;
+        //std::cout << "\rEstimate of Pi = " << std::format("{}", estimatePi(totalSatisfied, runs)) << " from " << runs << " runs." << std::endl;
+        //std::cout << "\rEstimate of integral = " << estimateIntegral(currSatisfied, currTotalSatisfied) << " from current " << currTotalSatisfied << " runs." << std::endl;
+        std::cout << "\rEstimate of integral = " << std::format("{}", estimateIntegral(totalSatisfied, total)) << " from " << total << " runs." << std::endl;
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> duration = end - start;
+        double seconds = duration.count();
+        std::cout << "Duration: " << seconds << " seconds " << " rate (runs/second): " << (total / seconds) << std::endl;
+        start = end;
+    }
+}
+
 int main()
 {
     //std::cout << std::fixed << std::setprecision(10);
@@ -203,5 +233,6 @@ int main()
     //unsigned long long OriginalN = 500000000;
     //std::cout << "estimated pi, multi-threaded, N = " << OriginalN << " pi = " << estimatePiMultiThreaded(OriginalN, processor_count) << std::endl;
     
-    estimatePiContinuously(processor_count);
+    //estimatePiContinuously(processor_count);
+    estimateSequentially(processor_count);
 }
