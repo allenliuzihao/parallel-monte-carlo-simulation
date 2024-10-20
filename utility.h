@@ -227,10 +227,10 @@ double estimateIntegralSum(unsigned long long N, std::mt19937& gen, std::uniform
         //double pdf = quadraticPdf(x);
         //vec3 dir = sampleDirectionOnUnitSphere(gen, dis);
         //double pdf = unitSphereDirPdf(dir);
-        //vec3 dir = sampleDirectionOnHemisphere(gen, dis);
-        //double pdf = hemisphereDirPdf(dir);
-        vec3 dir = sampleDirectionCosineWeightedOnHemisphere(gen, dis);
-        double pdf = cosineWeightedHemisphereDirPdf(dir);
+        vec3 dir = sampleDirectionOnHemisphere(gen, dis);
+        double pdf = hemisphereDirPdf(dir);
+        //vec3 dir = sampleDirectionCosineWeightedOnHemisphere(gen, dis);
+        //double pdf = cosineWeightedHemisphereDirPdf(dir);
 
         //unstratified += integrandXSquared(x) / pdf;
         //unstratified += integrandSinXPow5(x) / pdf;
@@ -238,8 +238,8 @@ double estimateIntegralSum(unsigned long long N, std::mt19937& gen, std::uniform
         //unstratified += integrandXPow(x, 2.5);
         //unstratified += integrandExponent(x) / pdf;
         //unstratified += cosineSquaredIntegrand(dir) / pdf;
-        //unstratified += cosinePow3Integrand(dir) / pdf;
-        unstratified += cosineIntegrand(dir) / pdf;
+        unstratified += cosinePow3Integrand(dir) / pdf;
+        //unstratified += cosineIntegrand(dir) / pdf;
     }
     //assert(std::abs(unstratified / N  -  8.0 / 3.0) < 1e-8);
 
