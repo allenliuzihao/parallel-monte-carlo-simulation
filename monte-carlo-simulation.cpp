@@ -126,7 +126,7 @@ void numCirclesPerThreadPersistent(unsigned int threadId, std::vector<unsigned l
     }
 }
 
-void estimatePiContinuously(unsigned int processor_count) {
+void estimateContinuously(unsigned int processor_count) {
     std::vector<unsigned long long> requestQueues(processor_count, 0);
     std::vector<unsigned long long> localRequestQueues(processor_count, 0);
 
@@ -233,6 +233,6 @@ int main()
     //unsigned long long OriginalN = 500000000;
     //std::cout << "estimated pi, multi-threaded, N = " << OriginalN << " pi = " << estimatePiMultiThreaded(OriginalN, processor_count) << std::endl;
     
-    //estimatePiContinuously(processor_count);
+    //estimateContinuously(processor_count);
     estimateSequentially(processor_count);
 }
