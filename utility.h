@@ -150,27 +150,49 @@ inline vec3 sampleDirectionOnUnitSphere(std::mt19937& gen, std::uniform_real_dis
     double y = std::sin(2 * std::numbers::pi * rnd1) * 2 * std::sqrt(rnd2 * (1 - rnd2));
     double z = 1.0 - 2.0 * rnd2;
 
-    vec3 dir = vec3(x, y, z);
-    return dir.normalize();
+    return vec3(x, y, z);
+}
+
+inline vec3 sampleDirectionOnHemisphere(std::mt19937& gen, std::uniform_real_distribution<double>& dis) {
+    double rnd1 = dis(gen);   // 0 ~ 1
+    double rnd2 = dis(gen);   // 0 ~ 1
+
+    double x = std::cos(2 * std::numbers::pi * rnd1) * 2 * std::sqrt(rnd2 * (1 - rnd2));
+    double y = std::sin(2 * std::numbers::pi * rnd1) * 2 * std::sqrt(rnd2 * (1 - rnd2));
+    double z = 1.0 - rnd2;
+
+    return vec3(x, y, z);
 }
 
 /* uniform direction on unit sphere */
+// 
 inline double cosineSquaredIntegrand(const vec3 &d) {
     return d.z * d.z;
 }
 
-inline double dirPdf(const vec3 &d) {
+// pi / 2
+inline double cosinePow3Integrand(const vec3& d) {
+    return d.z * d.z * d.z;
+}
+
+inline double unitSphereDirPdf(const vec3 &d) {
     return 1.0 / (4.0 * std::numbers::pi);
+}
+
+inline double hemisphereDirPdf(const vec3& d) {
+    return 1.0 / (2.0 * std::numbers::pi);
 }
 
 double estimateIntegralSum(unsigned long long N, std::mt19937& gen, std::uniform_real_distribution<double>& dis) {
     double unstratified = 0;
     constexpr double a = 0, b = 2;
     for (int i = 0; i < N; ++i) {
+        /*
         double rnd = dis(gen);   // 0 ~ 1
         if (rnd == 0) { // x = 0, pdf = 0, x ^ 2 = 0, no contribution.
             continue;
         }
+        */
         //double x = uniformSample(a, b, rnd);
         //double pdf = uniformPdf(a, b);
         //double x = linearSample(rnd);
@@ -178,7 +200,9 @@ double estimateIntegralSum(unsigned long long N, std::mt19937& gen, std::uniform
         //double x = quadraticSample(rnd);
         //double pdf = quadraticPdf(x);
         vec3 dir = sampleDirectionOnUnitSphere(gen, dis);
-        double pdf = dirPdf(dir);
+        double pdf = unitSphereDirPdf(dir);
+        //vec3 dir = sampleDirectionOnHemisphere(gen, dis);
+        //double pdf = hemisphereDirPdf(dir);
 
         //unstratified += integrandXSquared(x) / pdf;
         //unstratified += integrandSinXPow5(x) / pdf;
@@ -186,6 +210,7 @@ double estimateIntegralSum(unsigned long long N, std::mt19937& gen, std::uniform
         //unstratified += integrandXPow(x, 2.5);
         //unstratified += integrandExponent(x) / pdf;
         unstratified += cosineSquaredIntegrand(dir) / pdf;
+        //unstratified += cosinePow3Integrand(dir) / pdf;
     }
     //assert(std::abs(unstratified / N  -  8.0 / 3.0) < 1e-8);
 
