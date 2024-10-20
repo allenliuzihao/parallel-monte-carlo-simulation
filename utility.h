@@ -127,7 +127,7 @@ struct vec3 {
     }
 };
 
-inline vec3 sampleDirectionOnUnitSphere(std::mt19937& gen, std::uniform_real_distribution<double>& dis) {
+inline vec3 sampleDirectionOnUnitSphereRejection(std::mt19937& gen, std::uniform_real_distribution<double>& dis) {
     while (true) {
         double rnd1 = 2.0 * dis(gen) - 1.0;   // -1 ~ 1
         double rnd2 = 2.0 * dis(gen) - 1.0;   // -1 ~ 1
@@ -140,6 +140,18 @@ inline vec3 sampleDirectionOnUnitSphere(std::mt19937& gen, std::uniform_real_dis
         }
     }
     return {};
+}
+
+inline vec3 sampleDirectionOnUnitSphere(std::mt19937& gen, std::uniform_real_distribution<double>& dis) {
+    double rnd1 = dis(gen);   // 0 ~ 1
+    double rnd2 = dis(gen);   // 0 ~ 1
+
+    double x = std::cos(2 * std::numbers::pi * rnd1) * 2 * std::sqrt(rnd2 * (1 - rnd2));
+    double y = std::sin(2 * std::numbers::pi * rnd1) * 2 * std::sqrt(rnd2 * (1 - rnd2));
+    double z = 1.0 - 2.0 * rnd2;
+
+    vec3 dir = vec3(x, y, z);
+    return dir.normalize();
 }
 
 /* uniform direction on unit sphere */
