@@ -1,5 +1,5 @@
 // monte-carlo-simulation.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+
 
 #include <iostream>
 #include <format>
@@ -125,6 +125,8 @@ void estimatePiContinuously(unsigned int processor_count) {
         mtx.emplace_back(std::make_unique<std::mutex>());
     }
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     unsigned int thread = 0;
     unsigned long long runs = 0, totalSatisfied = 0;
     while (true) {
@@ -159,6 +161,12 @@ void estimatePiContinuously(unsigned int processor_count) {
                 //std::cout << "\rEstimate of Pi = " << std::format("{}", estimatePi(totalSatisfied, runs)) << " from " << runs << " runs." << std::endl;
                 //std::cout << "\rEstimate of integral = " << estimateIntegral(currSatisfied, currTotalSatisfied) << " from current " << currTotalSatisfied << " runs." << std::endl;
                 std::cout << "\rEstimate of integral = " << std::format("{}", estimateIntegral(totalSatisfied, runs)) << " from " << runs << " runs." << std::endl;
+
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> duration = end - start;
+                double seconds = duration.count();
+                std::cout << "Duration: " << seconds << " seconds " << " rate (runs/second): " << (currTotalSatisfied / seconds) << std::endl;
+                start = end;
             }
         }
         // increment 
