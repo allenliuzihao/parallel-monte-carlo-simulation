@@ -165,7 +165,7 @@ inline vec3 sampleDirectionOnHemisphere(std::mt19937& gen, std::uniform_real_dis
 }
 
 /* uniform direction on unit sphere */
-// 
+// 4 * pi / 3
 inline double cosineSquaredIntegrand(const vec3 &d) {
     return d.z * d.z;
 }
